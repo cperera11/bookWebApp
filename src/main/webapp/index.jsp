@@ -10,7 +10,7 @@
     <body>
         <h1>Pick a Task</h1>
         <ul>
-            <li><a href="authorController?action=list">View all Authors</a></li>
+            <li><a href="authorController?action=displayAll">View all Authors</a></li>
             <li>...more to come</li>
             
             

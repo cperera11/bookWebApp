@@ -14,7 +14,8 @@ public interface DataAccess {
             Object pkValue) throws ClassNotFoundException, 
             SQLException;
     
-     public List<Map<String, Object>> getAllRecords(String tableName, int maxRecords) throws SQLException, ClassNotFoundException;
+     public List<Map<String, Object>> getAllRecords(String tableName, int maxRecords)
+             throws SQLException, ClassNotFoundException;
 
      public abstract void openConnection(String driverClass, 
             String url, String userName, String password) 
@@ -22,5 +23,12 @@ public interface DataAccess {
      
       public int createRecord(String tableName, List<String> colNames, 
             List<Object> colValues)throws SQLException;
+      
+       public Map<String, Object> findRecordById(String tableName, String pkColName, Object pkValue)
+            throws SQLException;
+       
+        public int updateRecord(String tableName, List<String> colNames,
+            List<Object> colValues, String pkColName
+            , Object pkValue) throws SQLException;
     
 }

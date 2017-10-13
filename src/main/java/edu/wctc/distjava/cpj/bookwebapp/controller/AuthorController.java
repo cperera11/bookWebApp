@@ -1,4 +1,3 @@
-
 package edu.wctc.distjava.cpj.bookwebapp.controller;
 
 import edu.wctc.distjava.cpj.bookwebapp.model.Author;
@@ -16,11 +15,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
+
     public static final String ACTION = "action";
-    public static final String LIST_ACTION = "list";
+    public static final String DISPLAY_ALL = "displayAll";
+    public static final String DELETE = "Delete";
+    public static final String EDIT = "Edit";
+    public static final String ADD = "Add";
+    public static final String ID = "id";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,33 +38,42 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String destination = "/authorList.jsp"; // default
-        
+        String destination = "authorList.jsp"; // default
+
         try {
             String action = request.getParameter(ACTION);
-            
+
             IAuthorDao dao = new AuthorDao(
-                "com.mysql.jdbc.Driver",
-                "jdbc:mysql://localhost:3306/book",
-                "root", "admin",
-                new MySqlDataAccess()
+                    "com.mysql.jdbc.Driver",
+                    "jdbc:mysql://localhost:3306/book",
+                    "root", "admin",
+                    new MySqlDataAccess()
             );
-        
-            AuthorService authorService = 
-                new AuthorService(dao);
-        
+
+            AuthorService authorService
+                    = new AuthorService(dao);
+
             List<Author> authorList = null;
-            
-            if(action.equalsIgnoreCase(LIST_ACTION)) {
+
+            if (action.equalsIgnoreCase(DISPLAY_ALL)) {
                 authorList = authorService.getAuthorList();
                 request.setAttribute("authorList", authorList);
+                   
+//            } else if (action.equalsIgnoreCase(ADD)) {
+//                authorService.addAuthor(colValues);
+
+            } else if (action.equalsIgnoreCase(DELETE)) {
+                authorService.removeAuthorById(ID);
+
+//            } else if (action.equalsIgnoreCase(EDIT)) {
+//                authorService.updateAuthorById(colValues, ID);
             }
-            
-        } catch(Exception e) {
-            destination = "/authorList.jsp";
+
+        } catch (Exception e) {
+            destination = "authorList.jsp";
             request.setAttribute("errMessage", e.getMessage());
         }
-        
+
         RequestDispatcher view
                 = request.getRequestDispatcher(destination);
         view.forward(request, response);
