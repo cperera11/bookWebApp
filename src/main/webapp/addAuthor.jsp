@@ -5,6 +5,8 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -12,25 +14,26 @@
         <title>Add Author Information</title>
     </head>
     <body>
-        <h1>Add Author Information</h1>
+        <jsp:include page="header.jsp"/>
+        <h3>Add Author Information</h3>
         <form id="add" name="formType" value="" method = "POST" action ="authorController?action=update&formType=recAdd">
-            <table border="1">
+            <table class="table-striped" border="1">
                 <tr>
-                    <td>Author Name</td>
+                    <td class="row">Author Name</td>
                     <td> <input type ="text" name="authorName" value=""</td>
                 </tr>
 
                 <tr>
-                    <td>Date Added</td>
+                    <td class="row">Date Added</td>
                     <td> <input type ="text" name="dateAdded" value="${date_added}"  readonly/></td>
                 </tr>
 
             </table>
-
+            <br> 
             <input type ="hidden" name="Id" value="">
 
-            <button type ="submit" name ="buttonAction" value="Save">Save</button>
-            <button type ="submit" name ="buttonAction" value="Cancel">Cancel</button>
+            <button class=btn-info" type ="submit" name ="buttonAction" value="Save">Save</button>
+            <button class=btn-info" type ="submit" name ="buttonAction" value="Cancel">Cancel</button>
         </form>
     </body>
 </html>

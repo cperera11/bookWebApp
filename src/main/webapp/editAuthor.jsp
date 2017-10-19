@@ -15,8 +15,9 @@
         <title>edit author Page</title>
     </head>
     <body>
+        <jsp:include page="header.jsp"/>
         <div class="page-header">
-        <h2>Edit Author Information</h2>
+        <h3>Edit Author Information</h3>
         </div>
         <form id="edit" name="formType "value="" method = "POST" action ="authorController?action=update&formType=recEdit">
             <div class="row col-md-4">

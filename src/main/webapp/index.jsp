@@ -8,7 +8,8 @@
         <title>Book Web Application</title>
     </head>
     <body>
-        <h1>Pick a Task</h1>
+        <jsp:include page="header.jsp"/>
+        <h3>Pick a Task</h3>
         <ul>
             <li><a href="authorController?action=displayList">View all Authors</a></li>
             <li>...more to come</li>

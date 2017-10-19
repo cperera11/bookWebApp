@@ -28,7 +28,10 @@ public class AuthorController extends HttpServlet {
     public static final String ADD = "add";
     private static final String UPDATE = "update";
     private static final String SAVE = "Save";
-    
+    private String driverClass;
+    private String url;
+    private String userName;
+    private String password;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -39,12 +42,24 @@ public class AuthorController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    @Override
+    public void init() throws ServletException {
+        driverClass = getServletContext()
+                .getInitParameter("db.driver.class");
+        url = getServletContext()
+                .getInitParameter("db.url");
+        userName = getServletContext()
+                .getInitParameter("db.username");
+        password = getServletContext()
+                .getInitParameter("db.password");
+    }
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-    String destination = "/authorList.jsp"; // default
-       
+        String destination = "/authorList.jsp"; // default
+
         try {
             String action = request.getParameter(ACTION);
             String authorId = request.getParameter("authorId");
@@ -53,78 +68,72 @@ public class AuthorController extends HttpServlet {
             String formType = request.getParameter("formType");
             String buttonAction = request.getParameter("buttonAction");
 
-        IAuthorDao dao = new AuthorDao(
-                "com.mysql.jdbc.Driver",
-                "jdbc:mysql://localhost:3306/book",
-                "root", "admin",
-                new MySqlDataAccess()
-        );
+            AuthorService authorService = new AuthorService(
+                    new AuthorDao(driverClass, url, userName, password, new MySqlDataAccess()));
 
-        AuthorService authorService
-                = new AuthorService(dao);
+            if (action.equalsIgnoreCase(DISPLAY_LIST)) {
+                refreshAuthorList(authorService, request);
 
-       if (action.equalsIgnoreCase(DISPLAY_LIST)) {
-            refreshAuthorList(authorService, request);
-            
-        } else if (action.equalsIgnoreCase(DELETE)) {
+            } else if (action.equalsIgnoreCase(DELETE)) {
                 authorService.removeAuthorById(authorId);
                 refreshAuthorList(authorService, request);
-                
-       } else if (action.equalsIgnoreCase(EDIT)) {
-           
+
+            } else if (action.equalsIgnoreCase(EDIT)) {
+
                 Author authorRec = authorService.findAuthor(authorId);
                 request.setAttribute("authorRec", authorRec);
                 destination = "/editAuthor.jsp";
-           
-        }else if (action.equalsIgnoreCase(ADD)) {
+
+            } else if (action.equalsIgnoreCase(ADD)) {
                 String date = authorService.getCurrentDate();
-                request.setAttribute("date_added",date);
+                request.setAttribute("date_added", date);
                 destination = "/addAuthor.jsp";
 
-    }else if (action.equalsIgnoreCase(UPDATE)) {
-                if (buttonAction.equalsIgnoreCase(SAVE)){
-                if (formType.equalsIgnoreCase("recEdit")) {
-                    
+            } else if (action.equalsIgnoreCase(UPDATE)) {
+                if (buttonAction.equalsIgnoreCase(SAVE)) {
+                    if (formType.equalsIgnoreCase("recEdit")) {
+
                         authorService.updateAuthorById(Arrays.asList(authorName, dateAdded), authorId);
-                        
+
                     } else if (formType.equalsIgnoreCase("recAdd")) {
-                        
-                    authorService.addAuthor(Arrays.asList((authorName), dateAdded));
-                }
+
+                        authorService.addAuthor(Arrays.asList((authorName), dateAdded));
+                    }
                 }
                 refreshAuthorList(authorService, request);
                 destination = "/authorList.jsp";
 
             }
-  }catch (Exception e) {
+        } catch (Exception e) {
             destination = "authorList.jsp";
-        request.setAttribute("errMessage", e.getMessage());
+            request.setAttribute("errMessage", e.getMessage());
+        }
+
+        RequestDispatcher view
+                = request.getRequestDispatcher(destination);
+
+        view.forward(request, response);
+
     }
 
-    RequestDispatcher view
-            = request.getRequestDispatcher(destination);
-
-    view.forward (request, response);
-
-    }
-private void refreshAuthorList(AuthorService authorService, HttpServletRequest request)
+    private void refreshAuthorList(AuthorService authorService, HttpServletRequest request)
             throws ClassNotFoundException, SQLException {
         List<Author> authorList;
         authorList = authorService.getAuthorList();
         request.setAttribute("authorList", authorList);
     }
-    
+
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-/**
- * Handles the HTTP <code>GET</code> method.
- *
- * @param request servlet request
- * @param response servlet response
- * @throws ServletException if a servlet-specific error occurs
- * @throws IOException if an I/O error occurs
- */
-@Override
-        protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -138,7 +147,7 @@ private void refreshAuthorList(AuthorService authorService, HttpServletRequest r
      * @throws IOException if an I/O error occurs
      */
     @Override
-        protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -149,7 +158,7 @@ private void refreshAuthorList(AuthorService authorService, HttpServletRequest r
      * @return a String containing servlet description
      */
     @Override
-        public String getServletInfo() {
+    public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 

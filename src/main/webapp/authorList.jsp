@@ -14,9 +14,10 @@
         <title>Author List</title>
     </head>
     <body>
+        <jsp:include page="header.jsp"/>
         <div class ="wrapper">
             <div class="page-header">
-                <h2>Author List</h2>
+                <h3>Author List</h3>
             </div>
             <div class="row col-md-5">
                 <table  class ="table table-striped table-hover">
