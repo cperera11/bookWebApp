@@ -15,28 +15,30 @@
         <title>edit author Page</title>
     </head>
     <body>
-        <h1>Edit Author Information</h1>
-
+        <div class="page-header">
+        <h2>Edit Author Information</h2>
+        </div>
         <form id="edit" name="formType "value="" method = "POST" action ="authorController?action=update&formType=recEdit">
-            <table border="1">
+            <div class="row col-md-4">
+                <table  class ="table table-striped ">
                 
                  <tr>
                     <td>
-                       <input type ="text" name="authorId" value="${authorRec.get("author_id")}"> 
+                       <input type ="hidden" name="authorId" value="${authorRec.authorId}"> 
                     </td>
                 </tr>
                 <tr>
-                    <td>Author Name</td>
-                    <td> <input type ="text" name="authorName" value="${authorRec.get("author_name")}"</td>
+                    <td class="col-sm-3" style="background-color:gainsboro;">Author Name: </td>
+                    <td class="col-sm-4" style="background-color:beige;"> <input type ="text" name="authorName" value="${authorRec.authorName}"</td>
                 </tr>
                 
                 <tr>
-                    <td>Date Added</td>
-                    <td> <input type ="text" name="dateAdded" value="${authorRec.get("date_added")}" readonly=""</td>
+                    <td class="col-sm-3" style="background-color:gainsboro;">Date Added: </td>
+                    <td class="col-sm-4" style="background-color:beige;"> <input type ="text" name="dateAdded" value="${authorRec.dateAdded}" readonly=""</td>
                 </tr>
-              
             </table>
-            
+            </div>
+
           
                
             <button type ="submit" name ="buttonAction" value="Save">Save</button>

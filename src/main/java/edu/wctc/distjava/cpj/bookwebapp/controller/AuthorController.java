@@ -28,7 +28,7 @@ public class AuthorController extends HttpServlet {
     public static final String ADD = "add";
     private static final String UPDATE = "update";
     private static final String SAVE = "Save";
-    public static final String ID = "id";
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -71,7 +71,8 @@ public class AuthorController extends HttpServlet {
                 refreshAuthorList(authorService, request);
                 
        } else if (action.equalsIgnoreCase(EDIT)) {
-                Map<String, Object> authorRec = authorService.findAuthor(authorId);
+           
+                Author authorRec = authorService.findAuthor(authorId);
                 request.setAttribute("authorRec", authorRec);
                 destination = "/editAuthor.jsp";
            

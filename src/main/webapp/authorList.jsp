@@ -14,27 +14,38 @@
         <title>Author List</title>
     </head>
     <body>
-            <div class ="wrapper">
-        <h2>Author List</h2>
-        <div class="row col-md-6">
-        <table  class ="table table-bordered table-condensed">
-            <c:forEach var="a" items="${authorList}">
-                <tr>
-                    <td class="span2">${a.authorId}</td>                   
-                    <td class="span6">${a.authorName}</td>
-                    <td class="span2"><fmt:formatDate pattern = "yyyy-MM-dd" value = "${a.dateAdded}" /></td>
-                    <td><button class="btn btn-danger" type="submit" value="Delete" class="btn-info"
-                                     onclick="location.href = 'authorController?action=delete&authorId=${a.authorId}'"> Delete</button></td>
-                    <td class="span1"><button type="submit" value="Edit" class="btn-primary"
-                                     onclick="location.href = 'authorController?action=edit&authorId=${a.authorId}'">Edit</button></td>
-                </tr>
+        <div class ="wrapper">
+            <div class="page-header">
+                <h2>Author List</h2>
+            </div>
+            <div class="row col-md-5">
+                <table  class ="table table-striped table-hover">
+                    <thead class="table-active">
+                        <tr>
+                            <th>#</th>
+                            <th>Author Name</th>
+                            <th>Date Added</th>
+                         </tr>
+                    </thead>
+                    <c:forEach var="a" items="${authorList}">
+                        <tr>
+                            <td>${a.authorId}</td>                   
+                            <td>${a.authorName}</td>
+                            <td><fmt:formatDate pattern = "yyyy-MM-dd" value = "${a.dateAdded}" /></td>
+                            
+                            <td><button class="btn btn-danger" type="submit" value="Delete" class="warning"
+                                        onclick="location.href = 'authorController?action=delete&authorId=${a.authorId}'"> Delete</button></td>
+                                        
+                           <td> <button class="btn btn-info" type="submit" value="Edit"
+                                        onclick="location.href = 'authorController?action=edit&authorId=${a.authorId}'">Edit</button></td>
+                        </tr>
 
-            </c:forEach>
-        </table> 
-        
-        <button class="btn-primary" type="submit" value="Add" onclick="location.href = 'authorController?action=add'">Add</button>
+                    </c:forEach>
+                </table> 
 
+                <button class="btn btn-default" type="submit" value="Add" onclick="location.href = 'authorController?action=add'">Add</button>
+
+            </div>
         </div>
-    </div>
     </body>
 </html>

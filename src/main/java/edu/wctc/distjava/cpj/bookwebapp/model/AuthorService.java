@@ -45,9 +45,9 @@ public class AuthorService {
         return authorDao.updateAuthor(colValues, id);
     }
 
-public Map<String, Object> findAuthor(String authorId) throws ClassNotFoundException, SQLException{
+public Author findAuthor(String authorId) throws ClassNotFoundException, SQLException{
         int id = Integer.parseInt(authorId);   
-        return (Map<String, Object>) authorDao.findAuthorById(id);
+        return authorDao.findAuthorById(id);
     }
 
     public void setAuthorDao(IAuthorDao authorDao) {
