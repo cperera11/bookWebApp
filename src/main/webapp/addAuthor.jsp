@@ -5,7 +5,6 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
 <!DOCTYPE html>
 <html>
@@ -29,7 +28,7 @@
                 </tr>
 
             </table>
-            <br> 
+                <br> 
             <input type ="hidden" name="Id" value="">
 
             <button class=btn-info" type ="submit" name ="buttonAction" value="Save">Save</button>
