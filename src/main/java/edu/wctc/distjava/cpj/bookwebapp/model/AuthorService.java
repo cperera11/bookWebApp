@@ -1,102 +1,77 @@
 package edu.wctc.distjava.cpj.bookwebapp.model;
 
-import java.sql.SQLException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
+@Stateless
+public class AuthorService implements Serializable {
 
-public class AuthorService {
-    private IAuthorDao authorDao;
-    
-    public AuthorService(IAuthorDao authorDao) {
-        setAuthorDao(authorDao);
+    private static final long serialVersionUID = 1L;
+
+    private final String AUTHOR_TBL = "author";
+    private final String AUTHOR_PK = "author_id";
+
+    @PersistenceContext(unitName = "book_PU")
+    private EntityManager em;
+
+    public AuthorService() {
     }
 
-    public final int removeAuthorById(String id) 
-            throws ClassNotFoundException, SQLException, 
-            NumberFormatException {
-        
-        if (id == null) {
-            throw new IllegalArgumentException("id must be a Integer greater than 0");
-        }
-        
-        Integer value = Integer.parseInt(id);
+    public EntityManager getEm() {
+        return em;
+    }
 
-        return authorDao.removeAuthorById(value);
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
+
+    public final int removeAuthorById(String id) throws Exception {
+//        String jpql = "delete from Author a where a.authorId = :id";
+//        Query q = getEm().createQuery(jpql);
+//        q.setParameter("id", new Integer(id));
+        return 0;
     }
 
     public List<Author> getAuthorList()
-            throws SQLException, ClassNotFoundException {
+            throws Exception {
 
-        return authorDao.getListOfAuthors();
+        String jpql = "select a from Author a";
+        TypedQuery<Author> q = getEm().createQuery(jpql, Author.class);
+        return q.getResultList();
+
     }
 
-   
-    public int addAuthor(List<Object> colValues) throws SQLException, ClassNotFoundException{
-        
-        return authorDao.addAuthor(colValues);
-    }
-    
-    public int updateAuthorById(List <Object> colValues, String id) throws SQLException, ClassNotFoundException{   
-        return authorDao.updateAuthor(colValues, id);
+    public int addAuthor(List<Object> colValues) throws Exception {
+
+        return 0;
     }
 
-public Author findAuthor(String authorId) throws ClassNotFoundException, SQLException{
-        int id = Integer.parseInt(authorId);   
-        return authorDao.findAuthorById(id);
+    public int updateAuthorById(String id) {
+//        String jpql = "UPDATE Author a SET a.authorName = (a.authorName) where a.id = :id";
+//        Query q = getEm().createQuery(jpql);
+//        q.setParameter("id", new Integer(id));
+        return 0;
+
     }
 
-    public void setAuthorDao(IAuthorDao authorDao) {
-        this.authorDao = authorDao;
+    public final List<Author> findAuthor(String id) throws Exception {
+//        String jpql = "select a from Author a where a.authorId = :id";
+//        TypedQuery<Author> q = getEm().createQuery(jpql, Author.class);
+        return null;
     }
- public IAuthorDao getAuthorDao() {
-        return authorDao;
+
+    public String getCurrentDate() {
+        String date = new SimpleDateFormat("yyyy.MM.dd")
+                .format(new Date());
+        return date;
     }
- 
- public String getCurrentDate(){
- String date = new SimpleDateFormat("yyyy.MM.dd")
-         .format(new Date());
- return date;
- }
-    
-    public static void main(String[] args)
-            throws SQLException, ClassNotFoundException {
 
-        IAuthorDao dao = new AuthorDao(
-                "com.mysql.jdbc.Driver",
-                "jdbc:mysql://localhost:3306/book",
-                "root", "admin",
-                new MySqlDataAccess()
-        );
-
-        AuthorService authorService
-                = new AuthorService(dao);
-        
-//        int recsDeleted = authorService.removeAuthorById("9");
-//        System.out.println(" No. of authors deleted: " + recsDeleted);
-        
-//        int recsAdded = authorService.addAuthor(Arrays.asList("Dan Wilsan", "2017-7-18"));
-//        System.out.println(" No. of authors added: " + recsAdded);
-//        
-        int recsUpdated = authorService.updateAuthorById(Arrays.asList("Charlet Power", "2017-01-14"), "3");
-        System.out.println("No of authors updated: " + recsUpdated );
-       
-        
-        List<Author> list = authorService.getAuthorList();
-
-        for (Author a : list) {
-            System.out.println(a.getAuthorId() + ", "
-                    + a.getAuthorName() + ", " + a.getDateAdded() + "\n");
-        }
-        
-        
-        
-        
-        
-        
-    }
 }
