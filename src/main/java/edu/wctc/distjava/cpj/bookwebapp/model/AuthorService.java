@@ -1,6 +1,7 @@
 package edu.wctc.distjava.cpj.bookwebapp.model;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,11 +34,13 @@ public class AuthorService implements Serializable {
         this.em = em;
     }
 
-    public final int removeAuthorById(String id) throws Exception {
-//        String jpql = "delete from Author a where a.authorId = :id";
-//        Query q = getEm().createQuery(jpql);
-//        q.setParameter("id", new Integer(id));
-        return 0;
+    public int removeAuthorById(String id) throws Exception {
+        Integer value = Integer.parseInt(id);
+
+        String jpql = "delete from Author a where a.authorId = :id";
+        Query q = getEm().createQuery(jpql);
+        q.setParameter("id", value);
+        return q.executeUpdate();
     }
 
     public List<Author> getAuthorList()
@@ -49,29 +52,41 @@ public class AuthorService implements Serializable {
 
     }
 
-    public int addAuthor(List<Object> colValues) throws Exception {
+    public void addAuthor(List<Object> colValues) throws Exception {
 
-        return 0;
+        Author author = new Author();
+        author.setAuthorName(colValues.get(0).toString());
+        author.setDateAdded(new Date());
+        getEm().persist(author);
     }
 
-    public int updateAuthorById(String id) {
-//        String jpql = "UPDATE Author a SET a.authorName = (a.authorName) where a.id = :id";
+    public void updateAuthorById(List<Object> colValues, String id) throws ParseException {
+//        String jpql = "UPDATE Author a SET a.authorName = colValues.get(0) WHERE a.id = :id";
 //        Query q = getEm().createQuery(jpql);
 //        q.setParameter("id", new Integer(id));
-        return 0;
+//        return  q.executeUpdate();
+
+        Author author = getEm().find(Author.class, new Integer(id));
+        author.setAuthorName(colValues.get(0).toString());
+//        author.setDateAdded(getFormattedDate(colValues.get(1).toString()));
+        getEm().merge(author);
 
     }
 
-    public final List<Author> findAuthor(String id) throws Exception {
-//        String jpql = "select a from Author a where a.authorId = :id";
-//        TypedQuery<Author> q = getEm().createQuery(jpql, Author.class);
-        return null;
+    public final Author findAuthor(String id) throws Exception {
+         Author author = getEm().find(Author.class, new Integer(id));
+        return author;
     }
 
     public String getCurrentDate() {
         String date = new SimpleDateFormat("yyyy.MM.dd")
                 .format(new Date());
         return date;
+    }
+
+    public final Date getFormattedDate(String date) throws ParseException {
+        Date fmtDate = new SimpleDateFormat("yyyy-MM-dd").parse(date);
+        return fmtDate;
     }
 
 }

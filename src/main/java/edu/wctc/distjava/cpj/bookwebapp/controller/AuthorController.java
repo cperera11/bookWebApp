@@ -4,6 +4,7 @@ import edu.wctc.distjava.cpj.bookwebapp.model.Author;
 import edu.wctc.distjava.cpj.bookwebapp.model.AuthorService;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
@@ -23,7 +24,7 @@ public class AuthorController extends HttpServlet {
     public static final String ADD = "add";
     private static final String UPDATE = "update";
     private static final String SAVE = "Save";
-    
+
     @EJB
     private AuthorService authorService;
 
@@ -38,7 +39,7 @@ public class AuthorController extends HttpServlet {
      */
     @Override
     public void init() throws ServletException {
-        
+
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
@@ -55,46 +56,43 @@ public class AuthorController extends HttpServlet {
             String formType = request.getParameter("formType");
             String buttonAction = request.getParameter("buttonAction");
 
-            AuthorService authorService = new AuthorService();
-
             if (action.equalsIgnoreCase(DISPLAY_LIST)) {
-                try{
-                refreshAuthorList(authorService, request);
-                }catch (Exception e){
+                try {
+                    refreshAuthorList(authorService, request);
+                } catch (Exception e) {
                     e.getMessage();
                 }
-           
-            } 
-//            else if (action.equalsIgnoreCase(DELETE)) {
-//                authorService.removeAuthorById(authorId);
-//                refreshAuthorList(authorService, request);
-//
-//            } else if (action.equalsIgnoreCase(EDIT)) {
-//
-////                author = authorService.findAuthor(authorId);
-////                request.setAttribute("authorRec", author);
-//                destination = "/editAuthor.jsp";
-//
-//            } else if (action.equalsIgnoreCase(ADD)) {
-//                String date = authorService.getCurrentDate();
-//                request.setAttribute("date_added", date);
-//                destination = "/addAuthor.jsp";
-//
-//            } else if (action.equalsIgnoreCase(UPDATE)) {
-////                if (buttonAction.equalsIgnoreCase(SAVE)) {
-////                    if (formType.equalsIgnoreCase("recEdit")) {
-////
-////                        authorService.updateAuthorById(Arrays.asList(authorName, dateAdded), authorId);
-////
-////                    } else if (formType.equalsIgnoreCase("recAdd")) {
-////
-////                        authorService.addAuthor(Arrays.asList((authorName), dateAdded));
-////                    }
-////                }
-////                refreshAuthorList(authorService, request);
-////                destination = "/authorList.jsp";
-//
-//            }
+
+            } else if (action.equalsIgnoreCase(DELETE)) {
+                authorService.removeAuthorById(authorId);
+                refreshAuthorList(authorService, request);
+
+            } else if (action.equalsIgnoreCase(EDIT)) {
+                Author author;
+                author = authorService.findAuthor(authorId);
+                request.setAttribute("authorRec", author);
+                destination = "/editAuthor.jsp";
+
+            } else if (action.equalsIgnoreCase(ADD)) {
+                String date = authorService.getCurrentDate();
+                request.setAttribute("date_added", date);
+                destination = "/addAuthor.jsp";
+
+            } else if (action.equalsIgnoreCase(UPDATE)) {
+                if (buttonAction.equalsIgnoreCase(SAVE)) {
+                    if (formType.equalsIgnoreCase("recEdit")) {
+
+                        authorService.updateAuthorById(Arrays.asList(authorName, dateAdded), authorId);
+                        
+                    } else if (formType.equalsIgnoreCase("recAdd")) {
+
+                        authorService.addAuthor(Arrays.asList((authorName), dateAdded));
+                    }
+
+                }
+                refreshAuthorList(authorService, request);
+                destination = "/authorList.jsp";
+            }
         } catch (Exception e) {
             destination = "authorList.jsp";
             request.setAttribute("errMessage", e.getMessage());
