@@ -14,36 +14,24 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>edit author Page</title>
     </head>
-    <body>
-        <jsp:include page="header.jsp"/>
-        <div class="page-header">
-        <h3>Edit Author Information</h3>
+   <body>
+        <div class="container">
+            <h3>Update Author Name</h3>
+            <form name="author" method="POST" action="ac?action=SaveCancel&rec=update">
+                <input type="hidden" name="id" value="${author.authorId}">
+                <table class="tabe table-striped table-bordered table-hover table-condensed">
+                    <tr>
+                        <td>Author Name : </td>
+                        <td class="col-xs-12 col-sm-6 col-md-8"><input type="text" maxlength=46 class="form-control" placeholder="Author Name" name="aName" value="${author.authorName}"></td>
+                    </tr>
+                    <tr>
+                        <td>Date Added  : </td>
+                        <td><input type="text" class="form-control" placeholder="Date Added" name="aDateAdded" value = "<fmt:formatDate pattern = "yyyy-MM-dd" value="${author.dateAdded}"/>" readonly></td>
+                    </tr>
+                </table>                        
+                <p><button name="button_action" type="submit" value="Save">Save</button>
+                    <button name="button_action" type="submit" value="Cancel">Cancel</button></p>
+            </form>
         </div>
-        <form id="edit" name="formType "value="" method = "POST" action ="authorController?action=update&formType=recEdit">
-            <div class="row col-md-4">
-                <table  class ="table table-striped ">
-                
-                 <tr>
-                    <td>
-                       <input type ="hidden" name="authorId" value="${authorRec.authorId}"> 
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-sm-3" style="background-color:gainsboro;">Author Name: </td>
-                    <td class="col-sm-4" style="background-color:beige;"> <input type ="text" name="authorName" value="${authorRec.authorName}"</td>
-                </tr>
-                
-                <tr>
-                    <td class="col-sm-3" style="background-color:gainsboro;">Date Added: </td>
-                    <td class="col-sm-4" style="background-color:beige;"> <input type ="text" name="dateAdded" value="${authorRec.dateAdded}" readonly=""</td>
-                </tr>
-            </table>
-            </div>
-
-          
-               
-            <button type ="submit" name ="buttonAction" value="Save">Save</button>
-            <button type ="submit" name ="buttonAction" value="Cancel">Cancel</button>
-        </form>
     </body>
 </html>

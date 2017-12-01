@@ -12,7 +12,7 @@
         <h3>Pick a Task</h3>
         <ul>
             <li><a href="authorController?action=displayList">View all Authors</a></li>
-            <li>...more to come</li>
+            <li><a href="bookController?action=displayList">View all Books</a></li>
             
             
         </ul>

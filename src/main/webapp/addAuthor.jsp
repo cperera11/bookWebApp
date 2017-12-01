@@ -1,7 +1,7 @@
 <%-- 
     Document   : addAuthor
     Created on : Oct 17, 2017, 6:45:22 PM
-    Author     : CPere
+    Author     : CPerera
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -13,26 +13,24 @@
         <title>Add Author Information</title>
     </head>
     <body>
-        <jsp:include page="header.jsp"/>
-        <h3>Add Author Information</h3>
-        <form id="add" name="formType" value="" method = "POST" action ="authorController?action=update&formType=recAdd">
-            <table class="table-striped" border="1">
-                <tr>
-                    <td class="row">Author Name</td>
-                    <td> <input type ="text" name="authorName" value=""</td>
-                </tr>
-
-                <tr>
-                    <td class="row">Date Added</td>
-                    <td> <input type ="text" name="dateAdded" value="${date_added}"  readonly/></td>
-                </tr>
-
-            </table>
-                <br> 
-            <input type ="hidden" name="Id" value="">
-
-            <button class=btn-info" type ="submit" name ="buttonAction" value="Save">Save</button>
-            <button class=btn-info" type ="submit" name ="buttonAction" value="Cancel">Cancel</button>
-        </form>
+        <div class="container">
+            <h3>Add Author Name</h3>
+            <form name="author" method="POST" action="ac?action=SaveCancel&rec=new">
+                <div style="border:5px;">                       
+                    <table class="tabe table-striped table-bordered table-hover table-condensed">
+                        <tr>
+                            <td>Author Name : </td>
+                            <td class="col-xs-12 col-sm-6 col-md-8"><input type="text" maxlength=46 class="form-control" placeholder="Author Name" name="aName" value="${author.authorName}"></td>
+                        </tr>
+                        <tr>
+                            <td>Date Added  : </td>
+                            <td><input type="text" class="form-control" placeholder="Date Added" name="aDateAdded" value="${date}" readonly></td>
+                        </tr>
+                    </table>                        
+                    <p><button name="button_action" type="submit" value="Save">Save</button>
+                       <button name="button_action" type="submit" value="Cancel">Cancel</button></p>
+                </div>
+            </form>
+        </div>
     </body>
 </html>
