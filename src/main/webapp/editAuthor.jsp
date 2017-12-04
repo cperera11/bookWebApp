@@ -19,31 +19,30 @@
         <div class="page-header">
         <h3>Edit Author Information</h3>
         </div>
-        <form id="edit" name="formType "value="" method = "POST" action ="authorController?action=update&formType=recEdit">
+        <form id="edit" name="formType "value="" method = "POST" action ="authorController?action=SaveOrCancel&formType=recUpdate">
             <div class="row col-md-4">
                 <table  class ="table table-striped ">
                 
                  <tr>
                     <td>
-                       <input type ="hidden" name="authorId" value="${authorRec.authorId}"> 
+                       <input type ="hidden" name="Id" value="${author.authorId}"> 
                     </td>
                 </tr>
                 <tr>
                     <td class="col-sm-3" style="background-color:gainsboro;">Author Name: </td>
-                    <td class="col-sm-4" style="background-color:beige;"> <input type ="text" name="authorName" value="${authorRec.authorName}"</td>
+                    <td class="col-sm-4" style="background-color:beige;"> <input type ="text" name="aName" value="${author.authorName}"></td>
                 </tr>
                 
                 <tr>
                     <td class="col-sm-3" style="background-color:gainsboro;">Date Added: </td>
-                    <td class="col-sm-4" style="background-color:beige;"> <input type ="text" name="dateAdded" value="${authorRec.dateAdded}" readonly=""</td>
+                    <td class="col-sm-4" style="background-color:beige;"> <input type ="text" name="aDateAdded" value = "<fmt:formatDate pattern = "yyyy-MM-dd" value="${author.dateAdded}"/>"  readonly=""></td>
                 </tr>
             </table>
+            <button class=btn-info" type ="submit" name ="button_action" value="Save">Save</button>
+            <button class=btn-info" type ="submit" name ="button_action" value="Cancel">Cancel</button>
             </div>
 
-          
-               
-            <button type ="submit" name ="buttonAction" value="Save">Save</button>
-            <button type ="submit" name ="buttonAction" value="Cancel">Cancel</button>
+            
         </form>
     </body>
 </html>

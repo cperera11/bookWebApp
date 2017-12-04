@@ -23,29 +23,30 @@
                 <table  class ="table table-striped table-hover">
                     <thead class="table-active">
                         <tr>
-                            <th>#</th>
+                            
                             <th>Author Name</th>
                             <th>Date Added</th>
+                            <th>Book List</th>
                          </tr>
                     </thead>
                     <c:forEach var="a" items="${authorList}">
                         <tr>
-                            <td>${a.authorId}</td>                   
+                                            
                             <td>${a.authorName}</td>
                             <td><fmt:formatDate pattern = "yyyy-MM-dd" value = "${a.dateAdded}" /></td>
-                            
+                            <td></td>
                             <td><button class="btn btn-danger" type="submit" value="Delete" class="warning"
-                                        onclick="location.href = 'authorController?action=delete&authorId=${a.authorId}'"> Delete</button></td>
+                                        onclick="location.href = 'authorController?action=Delete&Id=${a.authorId}'"> Delete</button></td>
                                         
                            <td> <button class="btn btn-info" type="submit" value="Edit"
-                                        onclick="location.href = 'authorController?action=edit&authorId=${a.authorId}'">Edit</button></td>
+                                        onclick="location.href = 'authorController?action=Edit&Id=${a.authorId}'">Edit</button></td>
                         </tr>
 
                     </c:forEach>
                 </table> 
 
-                <button class="btn btn-default" type="submit" value="Add" onclick="location.href = 'authorController?action=add'">Add</button>
-
+                <button class="btn btn-default" type="submit" value="Add Author" onclick="location.href = 'authorController?action=Add'">Add Author</button>
+                <button class="btn btn-default" type="submit" value="Add Book" onclick="location.href = 'bc?action=Add&id'">Add Book</button>
             </div>
         </div>
     </body>

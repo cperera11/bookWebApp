@@ -18,16 +18,26 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthorController extends HttpServlet {
 
     public static final String ACTION = "action";
-    public static final String DISPLAY_LIST = "displayList";
-    public static final String DELETE = "delete";
-    public static final String EDIT = "edit";
-    public static final String ADD = "add";
-    private static final String UPDATE = "update";
-    private static final String SAVE = "Save";
+    public static final String LIST_ACTION = "displayList";
+    public static final String DELETE_ACTION = "Delete";
+    public static final String SAVE = "Save";
+    public static final String EDIT_ACTION = "Edit";
+    public static final String SAVEORCANCEL_ACTION = "SaveOrCancel";
+    public static final String ADD_ACTION = "Add";
+    public static final String AUTHOR_NAME = "aName";
+    public static final String DATE_ADDED = "aDateAdded";
+    public static final String REC_UPDATE = "recUpdate";
+    public static final String REC_ADD = "recAdd";
+    public static final String ID = "Id";
+    private static final long serialVersionUID = 1L;
 
     @EJB
     private AuthorService authorService;
 
+     @Override
+    public void init() throws ServletException {
+
+    }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -37,11 +47,7 @@ public class AuthorController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    @Override
-    public void init() throws ServletException {
-
-    }
-
+   
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -50,51 +56,46 @@ public class AuthorController extends HttpServlet {
 
         try {
             String action = request.getParameter(ACTION);
-            String authorId = request.getParameter("authorId");
-            String authorName = request.getParameter("authorName");
-            String dateAdded = request.getParameter("dateAdded");
+            String aName = request.getParameter(AUTHOR_NAME);
+            String aDateAdded = request.getParameter(DATE_ADDED);
+            String id = request.getParameter(ID);
+            String buttonAction = request.getParameter("button_action");
             String formType = request.getParameter("formType");
-            String buttonAction = request.getParameter("buttonAction");
-
-            if (action.equalsIgnoreCase(DISPLAY_LIST)) {
-                try {
-                    refreshAuthorList(authorService, request);
-                } catch (Exception e) {
-                    e.getMessage();
-                }
-
-            } else if (action.equalsIgnoreCase(DELETE)) {
-                authorService.removeAuthorById(authorId);
+            
+             Author author;
+           if (action.equalsIgnoreCase(LIST_ACTION)) {
                 refreshAuthorList(authorService, request);
-
-            } else if (action.equalsIgnoreCase(EDIT)) {
-                Author author;
-                author = authorService.findAuthor(authorId);
-                request.setAttribute("authorRec", author);
+            } else if (action.equalsIgnoreCase(DELETE_ACTION)) {
+               
+                    authorService.removeAuthorById(id);
+                    refreshAuthorList(authorService, request);
+               
+                                  
+            }  else if (action.equalsIgnoreCase(EDIT_ACTION)) {
+               
+                author = authorService.find(new Integer(id));
+                request.setAttribute("author", author);
                 destination = "/editAuthor.jsp";
 
-            } else if (action.equalsIgnoreCase(ADD)) {
-                String date = authorService.getCurrentDate();
-                request.setAttribute("date_added", date);
+            } else if (action.equalsIgnoreCase(ADD_ACTION)) {
+                request.setAttribute("date", authorService.currentDate());
                 destination = "/addAuthor.jsp";
 
-            } else if (action.equalsIgnoreCase(UPDATE)) {
+            }  else if (action.equalsIgnoreCase(SAVEORCANCEL_ACTION)) {
                 if (buttonAction.equalsIgnoreCase(SAVE)) {
-                    if (formType.equalsIgnoreCase("recEdit")) {
-
-                        authorService.updateAuthorById(Arrays.asList(authorName, dateAdded), authorId);
+                    if (formType.equalsIgnoreCase(REC_UPDATE)) {
+                        authorService.updateAuthorById(Arrays.asList(aName, aDateAdded), id);
+                    } else {
                         
-                    } else if (formType.equalsIgnoreCase("recAdd")) {
-
-                        authorService.addAuthor(Arrays.asList((authorName), dateAdded));
-                    }
+                        authorService.addAuthor(Arrays.asList(aName, aDateAdded));
+                  }
 
                 }
                 refreshAuthorList(authorService, request);
-                destination = "/authorList.jsp";
+                
             }
         } catch (Exception e) {
-            destination = "authorList.jsp";
+            destination = "/error.jsp";
             request.setAttribute("errMessage", e.getMessage());
         }
 
@@ -108,7 +109,9 @@ public class AuthorController extends HttpServlet {
     private void refreshAuthorList(AuthorService authorService, HttpServletRequest request)
             throws ClassNotFoundException, SQLException, Exception {
         List<Author> authorList;
-        authorList = authorService.getAuthorList();
+       
+            authorList = authorService.getList();
+    
         request.setAttribute("authorList", authorList);
     }
 
