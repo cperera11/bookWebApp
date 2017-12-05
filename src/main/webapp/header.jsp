@@ -12,5 +12,9 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
 <div class="page-header">
+    
     <h2 style="text-align: center; color:blue"> Best Authors: Best Books</h2>
+   <button class="btn btn-default" type="submit" value="Home" onclick="location.href = 'authorController?action=home'">Home</button>
+    
+    
 </div>

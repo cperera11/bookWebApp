@@ -11,7 +11,7 @@ import javax.persistence.PersistenceContext;
 
 /**
  *
- * @author CPere
+ * @author CPerera
  */
 @Stateless
 public class BookService extends AbstractFacade<Book> {
@@ -27,5 +27,36 @@ public class BookService extends AbstractFacade<Book> {
     public BookService() {
         super(Book.class);
     }
+    
+     public void addOrUpdateBook(String bookId, String title, String isbn, String authorId) {
+
+        Book book;
+        if (bookId == null || bookId.isEmpty()) {
+            //for a new record
+            book = new Book();
+            
+        } else {
+            //for a record to be updated
+            book = new Book(new Integer(bookId));
+        }
+
+        book.setTitle(title);
+        book.setIsbn(isbn);
+        Author author = getEntityManager().find(Author.class, new Integer(authorId));
+        book.setAuthor(author);
+
+        getEntityManager().merge(book);
+    }
+    
+    public void deleteById(String bookId){
+          Book book = getEntityManager().find(Book.class, new Integer(bookId));
+          remove(book);
+    }
+    
+    public Book findBook(String bookId){
+        int id = new Integer(bookId);
+        return getEntityManager().find(Book.class, id);
+    }
+    
     
 }

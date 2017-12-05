@@ -24,6 +24,7 @@ public class AuthorController extends HttpServlet {
     public static final String EDIT_ACTION = "Edit";
     public static final String SAVEORCANCEL_ACTION = "SaveOrCancel";
     public static final String ADD_ACTION = "Add";
+     public static final String HOME = "home";
     public static final String AUTHOR_NAME = "aName";
     public static final String DATE_ADDED = "aDateAdded";
     public static final String REC_UPDATE = "recUpdate";
@@ -65,6 +66,10 @@ public class AuthorController extends HttpServlet {
              Author author;
            if (action.equalsIgnoreCase(LIST_ACTION)) {
                 refreshAuthorList(authorService, request);
+            }  else if (action.equalsIgnoreCase(HOME)) {
+                refreshAuthorList(authorService, request);
+                 destination = "/index.jsp";
+                                            
             } else if (action.equalsIgnoreCase(DELETE_ACTION)) {
                
                     authorService.removeAuthorById(id);
