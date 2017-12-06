@@ -5,55 +5,66 @@
  */
 package edu.wctc.distjava.cpj.bookwebapp.model;
 
+import edu.wctc.distjava.cpj.bookwebapp.repository.AuthorRepository;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author CPere
  */
-@Stateless
-public class AuthorService extends AbstractFacade<Author> {
+@Service
+public class AuthorService  {
 
-    @PersistenceContext(unitName = "book_PU")
-    private EntityManager em;
+    @Autowired
+    private AuthorRepository authorRepo;
 
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public AuthorService() {
-        super(Author.class);
+
     }
-    public void addAuthor(List<Object> colValues) throws Exception {
+    
+    public List<Author> findAll(){
+        return authorRepo.findAll();
+    }
+    
+    public Author findById(String id){
+        return authorRepo.findOne(Integer.parseInt(id));
+    }
+    
+    public void addAuthor(String authorName){
+        Date dateAdded = new Date();
+        Author author = new Author();
+        author.setAuthorName(authorName);
+        author.setDateAdded(dateAdded);
+        author.setBookSet(new HashSet());
+        
+        authorRepo.save(author);
+        //authorRepo.saveAndFlush(author);
+        
+    }
+
+    public void addAuthor(List<Object> colValues) throws ParseException{
         Author author = new Author();
         author.setAuthorName(colValues.get(0).toString());
         author.setDateAdded(getDate(colValues.get(1).toString()));
-        this.create(author);
+        authorRepo.save(author);
     }
-    
-    /**
-     *
-     * @param colValues
-     * @param id
-     * @throws ParseException
-     */
+//    
     public void updateAuthorById(List<Object> colValues, String id) throws ParseException{
-        int authorId = Integer.parseInt(id);
-        Author author = (Author) find(authorId);
+        Author author = (Author) findById(id);
         author.setAuthorName(colValues.get(0).toString());
-//        author.setDateAdded(getDate(colValues.get(2).toString()));
-        edit(author);  
+        author.setDateAdded(getDate(colValues.get(1).toString()));
+        authorRepo.save(author); 
     }
     
     public void removeAuthorById(String id) throws Exception {
-        remove(find( new Integer(id)));
+        authorRepo.delete(findById(id));
     }    
 
 
@@ -66,4 +77,5 @@ public class AuthorService extends AbstractFacade<Author> {
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         return date;
     }
-}
+
+ }

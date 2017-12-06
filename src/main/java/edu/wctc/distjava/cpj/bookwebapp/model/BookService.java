@@ -5,58 +5,107 @@
  */
 package edu.wctc.distjava.cpj.bookwebapp.model;
 
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import edu.wctc.distjava.cpj.bookwebapp.repository.AuthorRepository;
+import edu.wctc.distjava.cpj.bookwebapp.repository.BookRepository;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author CPerera
  */
-@Stateless
-public class BookService extends AbstractFacade<Book> {
+@Service
+public class BookService {
 
-    @PersistenceContext(unitName = "book_PU")
-    private EntityManager em;
+    @Autowired
+    private AuthorRepository authorRepo;
 
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
+    @Autowired
+    private BookRepository bookRepo;
+
+    private final List bookIdList;
 
     public BookService() {
-        super(Book.class);
+        this.bookIdList = new ArrayList();
     }
-    
-     public void addOrUpdateBook(String bookId, String title, String isbn, String authorId) {
+
+    public void addNewBook(String title, String isbn, String authorId) {
+        Book book = new Book();
+        book.setTitle(title);
+        book.setIsbn(isbn);
+        Author author = authorRepo.findOne(new Integer(authorId));
+        book.setAuthor(author);
+        bookRepo.save(book);
+
+    }
+
+    public void addOrUpdateBook(String bookId, String title, String isbn, String authorId) {
 
         Book book;
         if (bookId == null || bookId.isEmpty()) {
-            //for a new record
+            //must be new record
             book = new Book();
-            
+
         } else {
-            //for a record to be updated
+            //must be updated recoed
             book = new Book(new Integer(bookId));
         }
 
         book.setTitle(title);
         book.setIsbn(isbn);
-        Author author = getEntityManager().find(Author.class, new Integer(authorId));
+        Author author = authorRepo.findOne(Integer.parseInt(authorId));
         book.setAuthor(author);
 
-        getEntityManager().merge(book);
+        bookRepo.save(book);
+    }
+
+    public void deleteById(String bookId) {
+        Book book = bookRepo.findOne(Integer.parseInt(bookId));
+        bookRepo.delete(book);
+    }
+
+    public Book findBook(String bookId) {
+
+        return bookRepo.findOne(Integer.parseInt(bookId));
+    }
+    public List<Book> findAll() {
+        return bookRepo.findAll();
     }
     
-    public void deleteById(String bookId){
-          Book book = getEntityManager().find(Book.class, new Integer(bookId));
-          remove(book);
+    public List<String> selectBookIdList(String id) {
+        if (bookIdList.size() > 0) {
+            boolean notFound = true;
+            for (int i = 0; i < bookIdList.size(); i++) {
+                if (id.equals(bookIdList.get(i).toString())) {
+                    bookIdList.remove(i);
+                    notFound = false;
+                }
+            }
+            if (notFound) {
+                bookIdList.add(id);
+            }
+        } else {
+            bookIdList.add(id);
+        }
+        return bookIdList;
     }
-    
-    public Book findBook(String bookId){
-        int id = new Integer(bookId);
-        return getEntityManager().find(Book.class, id);
+    public void deleteBooks() {
+        int size = bookIdList.size();
+        if (bookIdList.size() > 0) {
+            for (int i = 0; i < size; i++) {
+                Book book = bookRepo.findOne(Integer.parseInt(bookIdList.get(i).toString()));
+                bookRepo.delete(book);
+            }
+        }
+        int j = 0;
+        while (!bookIdList.isEmpty()) {
+            bookIdList.remove(0);
+        }
     }
-    
-    
+
+    public List<Book> getList() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

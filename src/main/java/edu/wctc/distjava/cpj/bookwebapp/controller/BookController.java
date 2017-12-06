@@ -5,29 +5,25 @@ import edu.wctc.distjava.cpj.bookwebapp.model.AuthorService;
 import edu.wctc.distjava.cpj.bookwebapp.model.Book;
 import edu.wctc.distjava.cpj.bookwebapp.model.BookService;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
-import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  *
- * @author CPere
+ * @author CPerera
  */
 @WebServlet(name = "BookController", urlPatterns = {"/bookController"})
 public class BookController extends HttpServlet {
 
-      @EJB
-    private AuthorService authorService;
     
-    @EJB
-    private BookService bookService;
-
     public static final String ACTION = "action";
     public static final String LIST_ACTION = "displayList";
     public static final String DELETE_ACTION = "Delete";
@@ -39,18 +35,21 @@ public class BookController extends HttpServlet {
     public static final String BOOK_TITLE = "bTitle";
     public static final String BOOK_ISBN = "bIsbn";
     public static final String BOOK_AUTHOR = "bAuthorId";
+    public static final String FIND_ACTION = "Find";
     
     public static final String BOOK_LIST_PAGE = "/bookList.jsp";
     public static final String BOOK_ADD_EDIT_PAGE = "/bookAddEdit.jsp";
 
     private static final long serialVersionUID = 1L;
 
+    private ServletContext sctx;
+    private WebApplicationContext ctx;
+    private AuthorService authorService;
+    private BookService bookService;
 
-
-    @Override
-    public void init() throws ServletException {
-
-    }
+//    @Override
+//    public void init() throws ServletException {
+//    }
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -83,11 +82,11 @@ public class BookController extends HttpServlet {
                 bookService.deleteById(bookId);
                 refreshBookList(request);
             } else if (action.equalsIgnoreCase(ADD_ACTION)){
-                request.setAttribute("authorList", authorService.getList());
+                request.setAttribute("authorList", authorService.findAll());
                 destination = BOOK_ADD_EDIT_PAGE;
                 
             } else if (action.equalsIgnoreCase(EDIT_ACTION)){
-                request.setAttribute("authorList", authorService.getList());
+                request.setAttribute("authorList", authorService.findAll());
                 request.setAttribute("book", bookService.findBook(bookId));
                 destination = BOOK_ADD_EDIT_PAGE;
                 
@@ -120,6 +119,17 @@ public class BookController extends HttpServlet {
         request.setAttribute("bookList", bookList);
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+      @Override
+    public void init() throws ServletException {
+// Ask Spring for object to inject
+        ServletContext sctx = getServletContext();
+        WebApplicationContext ctx
+                = WebApplicationContextUtils
+                        .getWebApplicationContext(sctx);
+        bookService
+                = (BookService) ctx.getBean("bookService");
+    }
+    
     /**
      * Handles the HTTP <code>GET</code> method.
      *

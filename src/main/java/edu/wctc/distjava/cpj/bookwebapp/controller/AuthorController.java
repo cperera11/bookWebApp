@@ -2,17 +2,21 @@ package edu.wctc.distjava.cpj.bookwebapp.controller;
 
 import edu.wctc.distjava.cpj.bookwebapp.model.Author;
 import edu.wctc.distjava.cpj.bookwebapp.model.AuthorService;
+import edu.wctc.distjava.cpj.bookwebapp.model.BookService;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
@@ -24,7 +28,7 @@ public class AuthorController extends HttpServlet {
     public static final String EDIT_ACTION = "Edit";
     public static final String SAVEORCANCEL_ACTION = "SaveOrCancel";
     public static final String ADD_ACTION = "Add";
-     public static final String HOME = "home";
+    public static final String HOME = "home";
     public static final String AUTHOR_NAME = "aName";
     public static final String DATE_ADDED = "aDateAdded";
     public static final String REC_UPDATE = "recUpdate";
@@ -32,13 +36,13 @@ public class AuthorController extends HttpServlet {
     public static final String ID = "Id";
     private static final long serialVersionUID = 1L;
 
-    @EJB
+    
+    
+    private ServletContext sctx;
+    private WebApplicationContext ctx;
     private AuthorService authorService;
+    private BookService bookService;
 
-     @Override
-    public void init() throws ServletException {
-
-    }
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -48,7 +52,6 @@ public class AuthorController extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-   
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -62,23 +65,22 @@ public class AuthorController extends HttpServlet {
             String id = request.getParameter(ID);
             String buttonAction = request.getParameter("button_action");
             String formType = request.getParameter("formType");
-            
-             Author author;
-           if (action.equalsIgnoreCase(LIST_ACTION)) {
+
+            Author author;
+            if (action.equalsIgnoreCase(LIST_ACTION)) {
                 refreshAuthorList(authorService, request);
-            }  else if (action.equalsIgnoreCase(HOME)) {
+            } else if (action.equalsIgnoreCase(HOME)) {
                 refreshAuthorList(authorService, request);
-                 destination = "/index.jsp";
-                                            
+                destination = "/index.jsp";
+
             } else if (action.equalsIgnoreCase(DELETE_ACTION)) {
-               
-                    authorService.removeAuthorById(id);
-                    refreshAuthorList(authorService, request);
-               
-                                  
-            }  else if (action.equalsIgnoreCase(EDIT_ACTION)) {
-               
-                author = authorService.find(new Integer(id));
+
+                authorService.removeAuthorById(id);
+                refreshAuthorList(authorService, request);
+
+            } else if (action.equalsIgnoreCase(EDIT_ACTION)) {
+
+                author = authorService.findById(id);
                 request.setAttribute("author", author);
                 destination = "/editAuthor.jsp";
 
@@ -86,18 +88,18 @@ public class AuthorController extends HttpServlet {
                 request.setAttribute("date", authorService.currentDate());
                 destination = "/addAuthor.jsp";
 
-            }  else if (action.equalsIgnoreCase(SAVEORCANCEL_ACTION)) {
+            } else if (action.equalsIgnoreCase(SAVEORCANCEL_ACTION)) {
                 if (buttonAction.equalsIgnoreCase(SAVE)) {
                     if (formType.equalsIgnoreCase(REC_UPDATE)) {
                         authorService.updateAuthorById(Arrays.asList(aName, aDateAdded), id);
                     } else {
-                        
+
                         authorService.addAuthor(Arrays.asList(aName, aDateAdded));
-                  }
+                    }
 
                 }
                 refreshAuthorList(authorService, request);
-                
+
             }
         } catch (Exception e) {
             destination = "/error.jsp";
@@ -114,13 +116,24 @@ public class AuthorController extends HttpServlet {
     private void refreshAuthorList(AuthorService authorService, HttpServletRequest request)
             throws ClassNotFoundException, SQLException, Exception {
         List<Author> authorList;
-       
-            authorList = authorService.getList();
-    
+
+        authorList = authorService.findAll();
+
         request.setAttribute("authorList", authorList);
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    @Override
+    public void init() throws ServletException {
+// Ask Spring for object to inject
+        ServletContext sctx = getServletContext();
+        WebApplicationContext ctx
+                = WebApplicationContextUtils
+                        .getWebApplicationContext(sctx);
+        authorService
+                = (AuthorService) ctx.getBean("authorService");
+    }
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
