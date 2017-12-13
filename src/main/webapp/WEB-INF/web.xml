@@ -25,7 +25,19 @@ accessed from any JSP page or servlet. -->
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
     <!-- END Spring configuration -->
-                  
+   
+   <!-- begin additional Spring Security config -->
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <!-- end Spring security config -->     
+               
+                                     
     <session-config>
         <session-timeout>
             30

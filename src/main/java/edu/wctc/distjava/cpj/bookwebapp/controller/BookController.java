@@ -78,7 +78,10 @@ public class BookController extends HttpServlet {
             // Book book;
             if (action.equalsIgnoreCase(LIST_ACTION)) {
                 refreshBookList(request);
-            } else if (action.equalsIgnoreCase(DELETE_ACTION)) {
+            }else if (action.equalsIgnoreCase(FIND_ACTION)) {
+                request.setAttribute("bookIdList", bookService.selectBookIdList(bookId));
+                refreshBookList(request);
+            }else if (action.equalsIgnoreCase(DELETE_ACTION)) {
                 bookService.deleteById(bookId);
                 refreshBookList(request);
             } else if (action.equalsIgnoreCase(ADD_ACTION)){
@@ -115,7 +118,7 @@ public class BookController extends HttpServlet {
 
     private void refreshBookList(HttpServletRequest request) {
         List<Book> bookList;
-        bookList = bookService.getList();
+        bookList = bookService.findAll();
         request.setAttribute("bookList", bookList);
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
