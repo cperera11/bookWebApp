@@ -104,7 +104,6 @@
      
     
     
-    
     <!-- Server managed connection pool accessed via JNDI -->
     <jee:jndi-lookup id="dataSource" jndi-name="jdbc/book"/>
   
