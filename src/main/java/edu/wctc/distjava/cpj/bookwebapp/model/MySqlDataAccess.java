@@ -67,11 +67,8 @@ public class MySqlDataAccess implements DataAccess {
        }
        
         return pstmt.executeUpdate();
-        
-        
+      
     }
-    
-    
     
     public int deleteRecordById(String tableName, String pkColName, 
             Object pkValue) throws ClassNotFoundException, 
@@ -82,19 +79,64 @@ public class MySqlDataAccess implements DataAccess {
         
         pstmt = conn.prepareStatement(sql);
         pstmt.setObject(1, pkValue);
-        
       
-        
         return pstmt.executeUpdate();
     }
     
-    /**
-     * Returns records from a table. Requires and open connection.
-     * @param tableName
-     * @param maxRecords
-     * @return
-     * @throws SQLException 
-     */
+     public int updateRecord(String tableName, List<String> colNames,
+            List<Object> colValues, String pkColName
+            , Object pkValue) throws SQLException {
+
+        String sql = "UPDATE " + tableName + " SET ";
+        
+        StringJoiner sj = new StringJoiner(" = ?, ", "", " = ?");
+
+        for (String col : colNames) {
+            sj.add(col);
+        }
+
+        sql += sj + " WHERE " + pkColName + " = ?;"; 
+
+        if (DEBUG) {
+            System.out.println(sql);
+        }
+
+        pstmt = conn.prepareStatement(sql);
+
+        for (int i = 1; i <= colValues.size(); i++) {
+            pstmt.setObject(i, colValues.get(i - 1));
+        }
+        pstmt.setObject(colValues.size() + 1, pkValue);
+        return pstmt.executeUpdate();
+    }
+     
+      public Map<String, Object> findRecordById(String tableName, String pkColName, Object pkValue)
+            throws SQLException {
+        String sql = null;
+
+        if (pkValue != null) {
+            sql = "select * from " + tableName + " where " + pkColName + " = ?";
+        } 
+
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setObject(1, pkValue);
+        rs = pstmt.executeQuery();
+
+        ResultSetMetaData rsmd = rs.getMetaData();
+        System.out.println("Meta Data " + rsmd);
+        int colCount = rsmd.getColumnCount();
+        Map<String, Object> record = null;
+
+        while (rs.next()) {
+            record = new LinkedHashMap<>();
+            for (int colNum = 1; colNum <= colCount; colNum++) {
+                record.put(rsmd.getColumnName(colNum), rs.getObject(colNum));
+            }
+        }
+        return record;
+    }
+     
+    
     public List<Map<String,Object>> getAllRecords(String tableName, int maxRecords) 
             throws SQLException, ClassNotFoundException {
         
@@ -121,8 +163,6 @@ public class MySqlDataAccess implements DataAccess {
             }
             rawData.add(record);
         }
-        
-       
         return rawData;
     }
 
@@ -137,20 +177,26 @@ public class MySqlDataAccess implements DataAccess {
                 "root", "admin"
         );
         
-       int recsAdded =  db.createRecord("author", Arrays.asList("author_name", "date_added"), 
-                 Arrays.asList("Steve Oliver", "2017-03-06"));
-        
-         db.closeConnection();
+//       db.createRecord("author", Arrays.asList("author_name", "date_added"), 
+//                 Arrays.asList("Sam Silver", "2016-12-06"));
+//         db.closeConnection();
          
-         System.out.println("Recs created: " + recsAdded);
+         
     
          
+         db.updateRecord("author", Arrays.asList("author_name", "date_added"),
+              Arrays.asList("Steve King", "2017-03-06"), "author_id", 11);
+          db.closeConnection();
+         
+//          int id = 1;
+//          Map<String, Object> r = db.findRecordById("author", "author_id", id);
+//          System.out.println(" ID enterd: "+ id + "   " + "Found Record: "+ r.get("author_id") + " "
+//                    + r.get("author_name") + " " + r.get("date_added"));
+//   
+//        db.closeConnection();
+//          
         
-//        db.openConnection(
-//                "com.mysql.jdbc.Driver",
-//                "jdbc:mysql://localhost:3306/book",
-//                "root", "admin"
-//        );
+
 //        
 //        int recsDeleted = db.deleteRecordById("author", "author_id", new Integer(4));
 //        System.out.println("No. of Recs Deleted: " + recsDeleted);

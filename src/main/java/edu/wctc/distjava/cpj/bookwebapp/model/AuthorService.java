@@ -1,17 +1,17 @@
 package edu.wctc.distjava.cpj.bookwebapp.model;
 
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 public class AuthorService {
     private IAuthorDao authorDao;
-    private final String AUTHOR_TBL = "author";
-    private final String AUTHOR_PK = "author_id";
-
+    
     public AuthorService(IAuthorDao authorDao) {
         setAuthorDao(authorDao);
     }
@@ -35,14 +35,34 @@ public class AuthorService {
         return authorDao.getListOfAuthors();
     }
 
-    public IAuthorDao getAuthorDao() {
-        return authorDao;
+   
+    public int addAuthor(List<Object> colValues) throws SQLException, ClassNotFoundException{
+        
+        return authorDao.addAuthor(colValues);
+    }
+    
+    public int updateAuthorById(List <Object> colValues, String id) throws SQLException, ClassNotFoundException{   
+        return authorDao.updateAuthor(colValues, id);
+    }
+
+public Author findAuthor(String authorId) throws ClassNotFoundException, SQLException{
+        int id = Integer.parseInt(authorId);   
+        return authorDao.findAuthorById(id);
     }
 
     public void setAuthorDao(IAuthorDao authorDao) {
         this.authorDao = authorDao;
     }
-
+ public IAuthorDao getAuthorDao() {
+        return authorDao;
+    }
+ 
+ public String getCurrentDate(){
+ String date = new SimpleDateFormat("yyyy.MM.dd")
+         .format(new Date());
+ return date;
+ }
+    
     public static void main(String[] args)
             throws SQLException, ClassNotFoundException {
 
@@ -56,13 +76,27 @@ public class AuthorService {
         AuthorService authorService
                 = new AuthorService(dao);
         
-        int recsDeleted = authorService.removeAuthorById("53");
-
+//        int recsDeleted = authorService.removeAuthorById("9");
+//        System.out.println(" No. of authors deleted: " + recsDeleted);
+        
+//        int recsAdded = authorService.addAuthor(Arrays.asList("Dan Wilsan", "2017-7-18"));
+//        System.out.println(" No. of authors added: " + recsAdded);
+//        
+        int recsUpdated = authorService.updateAuthorById(Arrays.asList("Charlet Power", "2017-01-14"), "3");
+        System.out.println("No of authors updated: " + recsUpdated );
+       
+        
         List<Author> list = authorService.getAuthorList();
 
         for (Author a : list) {
             System.out.println(a.getAuthorId() + ", "
                     + a.getAuthorName() + ", " + a.getDateAdded() + "\n");
         }
+        
+        
+        
+        
+        
+        
     }
 }

@@ -1,4 +1,3 @@
-
 package edu.wctc.distjava.cpj.bookwebapp.controller;
 
 import edu.wctc.distjava.cpj.bookwebapp.model.Author;
@@ -8,7 +7,10 @@ import edu.wctc.distjava.cpj.bookwebapp.model.IAuthorDao;
 import edu.wctc.distjava.cpj.bookwebapp.model.MySqlDataAccess;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,11 +18,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 @WebServlet(name = "AuthorController", urlPatterns = {"/authorController"})
 public class AuthorController extends HttpServlet {
+
     public static final String ACTION = "action";
-    public static final String LIST_ACTION = "list";
+    public static final String DISPLAY_LIST = "displayList";
+    public static final String DELETE = "delete";
+    public static final String EDIT = "edit";
+    public static final String ADD = "add";
+    private static final String UPDATE = "update";
+    private static final String SAVE = "Save";
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -35,50 +43,88 @@ public class AuthorController extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        String destination = "/authorList.jsp"; // default
-        
+    String destination = "/authorList.jsp"; // default
+       
         try {
             String action = request.getParameter(ACTION);
-            
-            IAuthorDao dao = new AuthorDao(
+            String authorId = request.getParameter("authorId");
+            String authorName = request.getParameter("authorName");
+            String dateAdded = request.getParameter("dateAdded");
+            String formType = request.getParameter("formType");
+            String buttonAction = request.getParameter("buttonAction");
+
+        IAuthorDao dao = new AuthorDao(
                 "com.mysql.jdbc.Driver",
                 "jdbc:mysql://localhost:3306/book",
                 "root", "admin",
                 new MySqlDataAccess()
-            );
-        
-            AuthorService authorService = 
-                new AuthorService(dao);
-        
-            List<Author> authorList = null;
-            
-            if(action.equalsIgnoreCase(LIST_ACTION)) {
-                authorList = authorService.getAuthorList();
-                request.setAttribute("authorList", authorList);
-            }
-            
-        } catch(Exception e) {
-            destination = "/authorList.jsp";
-            request.setAttribute("errMessage", e.getMessage());
-        }
-        
-        RequestDispatcher view
-                = request.getRequestDispatcher(destination);
-        view.forward(request, response);
+        );
 
+        AuthorService authorService
+                = new AuthorService(dao);
+
+       if (action.equalsIgnoreCase(DISPLAY_LIST)) {
+            refreshAuthorList(authorService, request);
+            
+        } else if (action.equalsIgnoreCase(DELETE)) {
+                authorService.removeAuthorById(authorId);
+                refreshAuthorList(authorService, request);
+                
+       } else if (action.equalsIgnoreCase(EDIT)) {
+           
+                Author authorRec = authorService.findAuthor(authorId);
+                request.setAttribute("authorRec", authorRec);
+                destination = "/editAuthor.jsp";
+           
+        }else if (action.equalsIgnoreCase(ADD)) {
+                String date = authorService.getCurrentDate();
+                request.setAttribute("date_added",date);
+                destination = "/addAuthor.jsp";
+
+    }else if (action.equalsIgnoreCase(UPDATE)) {
+                if (buttonAction.equalsIgnoreCase(SAVE)){
+                if (formType.equalsIgnoreCase("recEdit")) {
+                    
+                        authorService.updateAuthorById(Arrays.asList(authorName, dateAdded), authorId);
+                        
+                    } else if (formType.equalsIgnoreCase("recAdd")) {
+                        
+                    authorService.addAuthor(Arrays.asList((authorName), dateAdded));
+                }
+                }
+                refreshAuthorList(authorService, request);
+                destination = "/authorList.jsp";
+
+            }
+  }catch (Exception e) {
+            destination = "authorList.jsp";
+        request.setAttribute("errMessage", e.getMessage());
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    RequestDispatcher view
+            = request.getRequestDispatcher(destination);
+
+    view.forward (request, response);
+
+    }
+private void refreshAuthorList(AuthorService authorService, HttpServletRequest request)
+            throws ClassNotFoundException, SQLException {
+        List<Author> authorList;
+        authorList = authorService.getAuthorList();
+        request.setAttribute("authorList", authorList);
+    }
+    
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+/**
+ * Handles the HTTP <code>GET</code> method.
+ *
+ * @param request servlet request
+ * @param response servlet response
+ * @throws ServletException if a servlet-specific error occurs
+ * @throws IOException if an I/O error occurs
+ */
+@Override
+        protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -92,7 +138,7 @@ public class AuthorController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
@@ -103,7 +149,7 @@ public class AuthorController extends HttpServlet {
      * @return a String containing servlet description
      */
     @Override
-    public String getServletInfo() {
+        public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
 

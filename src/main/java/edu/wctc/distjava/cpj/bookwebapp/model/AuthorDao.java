@@ -16,6 +16,8 @@ public class AuthorDao implements IAuthorDao {
     private DataAccess db;
     private final String AUTHOR_TBL = "author";
     private final String AUTHOR_PK = "author_id";
+    private final String AUTHOR_NAME = "author_name";
+    private final String DATE_ADDED = "date_added";
 
     public AuthorDao(String driverClass, String url, 
             String userName, String password,
@@ -29,16 +31,17 @@ public class AuthorDao implements IAuthorDao {
     }
     
     
-   public int addAuthor(List<String> colName, List<Object> colValues) throws ClassNotFoundException, SQLException{ // use this method
+   public int addAuthor(List<Object> colValues) throws ClassNotFoundException, SQLException{
     
         db.openConnection(driverClass, url, userName, password);
         
-       int recAdded = db.createRecord(AUTHOR_TBL, colName, colValues);
+       int recAdded = db.createRecord(AUTHOR_TBL, Arrays.asList(AUTHOR_NAME,DATE_ADDED), colValues);
         
         db.closeConnection();
        return recAdded;
    }
     
+   
     
     public final int removeAuthorById(Integer id) throws ClassNotFoundException, SQLException {
         if(id == null || id < 1) {
@@ -86,6 +89,47 @@ public class AuthorDao implements IAuthorDao {
        
     }
 
+      @Override
+    public int updateAuthor(List<Object> colValue, Object pkValue) throws SQLException, ClassNotFoundException {
+       
+      db.openConnection(driverClass, url, userName, password);
+      int recUpdated = db.updateRecord(AUTHOR_TBL,  Arrays.asList(AUTHOR_NAME, DATE_ADDED), colValue, AUTHOR_PK, pkValue);
+      db.closeConnection();
+      return recUpdated;
+    }
+
+    @Override
+    public Author findAuthorById(Integer id) throws ClassNotFoundException, SQLException {
+          if(id == null || id < 1) {
+            throw new IllegalArgumentException("id must be a Integer greater than 0");
+        }
+        db.openConnection(driverClass, url, userName, password);
+        Map<String,Object> rec  = db.findRecordById(AUTHOR_TBL, AUTHOR_PK, id);
+        Author author = null;
+
+            author = new Author(); 
+              
+              Object objRecId = rec.get(AUTHOR_PK);
+              Integer recId = objRecId == null ? 
+                      0 : Integer.parseInt(objRecId.toString());
+              author.setAuthorId(recId);
+             
+              Object objName = rec.get("author_name");
+              String authorName = objName == null ? "" : objName.toString();
+              author.setAuthorName(authorName);
+              
+              Object objRecAdded = rec.get("date_added");
+              Date recAdded = objRecAdded == null ? null : (Date)objRecAdded;
+              author.setDateAdded(recAdded);
+
+        db.closeConnection();
+        
+        return author;
+    }
+    
+    
+    
+    
     public DataAccess getDb() {
         return db;
     }
@@ -136,14 +180,14 @@ public class AuthorDao implements IAuthorDao {
             new MySqlDataAccess()
         );
         
-        int recsDeleted = dao.removeAuthorById(20);
+        dao.removeAuthorById(2);
         List<Author> list = dao.getListOfAuthors();
-//        int recAdded = dao.addAuthor("author_name", "Steve Oliver");
         
         for(Author a: list) {
             System.out.println(a.getAuthorId() + ", "
                 + a.getAuthorName() + ", " + a.getDateAdded() + "\n");
         }
     }
-    
+
+  
 }
